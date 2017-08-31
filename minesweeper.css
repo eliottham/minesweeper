@@ -5,14 +5,19 @@
 }
 
 #grid {
-
+	display: block;
+	position: relative;
+	margin: auto;
 }
 
 .box {
 	float: left;
+	display: relative;
 	border: 1px solid black;
-	height: 30px;
-	width: 30px;
+	height: 1.5em;
+	width: 1.5em;
+	text-align: center;
+	line-height: 1.5em;
 }
 
 .row {
