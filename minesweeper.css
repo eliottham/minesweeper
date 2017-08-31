@@ -5,19 +5,65 @@
 }
 
 #grid {
-	display: block;
-	position: relative;
-	margin: auto;
+	position: absolute;
+	width: auto;
 }
 
 .box {
 	float: left;
 	display: relative;
-	border: 1px solid black;
+	border: 2px solid;
 	height: 1.5em;
 	width: 1.5em;
 	text-align: center;
 	line-height: 1.5em;
+  border-bottom-color: grey;
+  border-left-color: grey;
+  border-top-color: white;
+  border-right-color: white;
+  background-color: lightgrey;
+}
+
+.bomb {
+	background-color: red;
+	border-color: red;
+}
+
+[class*="show"] {
+	background-color: darkgrey;
+	border: 1px dashed grey;
+}
+
+.show-1 {
+	color: #0000ff;
+}
+
+.show-2 {
+	color: #008100;
+}
+
+.show-3 {
+	color: #ff1300;
+}
+
+.show-4 {
+	color: #000083;
+}
+
+.show-5 {
+	color: #810500;
+}
+
+.show-6 {
+	color: #2a9494;
+}
+
+.show-7 {
+	color: #000000;
+}
+
+.show-8 {
+	color: #808080;
 }
 
 .row {

@@ -15,8 +15,9 @@ $('#grid').on('mousedown', '.box', function(event) {
 			render(grid);
 			break;
 		case 3:
-			console.log('mb2');
-
+			event.preventDefault();
+			$(this).data('object').setFlag();
+			render(grid);
 		}
 	});
 
@@ -25,9 +26,13 @@ $('#grid').on('mousedown', '.box', function(event) {
 var surrounding = [ [-1, 1], [0, 1],   [1, 1],  [-1, 0],
                     [1, 0],  [-1, -1], [0, -1], [1, -1] ];
 
+var bombs = [];
+
+flags = 9;
+
 function makeGrid(size) {
 	var grid = new Array(size);
-	var mines = Math.floor((size * size) / 3.6);
+	var mines = Math.floor((size * size) / 4);
 	
 	for(var i = 0; i < size; i++) {
 		grid[i] = new Array(size);
@@ -40,6 +45,7 @@ function makeGrid(size) {
 		var x = Math.floor(Math.random() * size);
 		var y = Math.floor(Math.random() * size);
 		grid[x][y] = new Bomb();
+		bombs.push(grid[x][y]);
 	}
 
 	for(var i = 0; i < size; i++) {
@@ -59,29 +65,63 @@ function render(grid) {
 		for(var j = 0; j <= grid.length; j++) {
 			if(j == grid.length) {
 				$('#grid').append('<div class="row"></div>');
+				break;
 			}
-			else { 
-				var $box = $('<div class="box"></div>');
-				$box.data('object', grid[i][j]);
-				grid[i][j].show == true ? $box.html(grid[i][j].touching) : '';
-				$('#grid').append($box);
-			}
+			var $box = $('<div class="box"></div>');
+			$box.data('object', grid[i][j]);
+			showBox($box);
+			$('#grid').append($box);
 		}
 	}
 }
 
+function showBox($box) {
+	var object = $box.data('object');
+	
+	if(object.flag) { return $box.html('>') };
+	
+	if(object.show) {
+		$box.html(object.display());
+		object instanceof Square ? $box.addClass(object.cssClass()) : $box.addClass('bomb');
+	}
+}
+
+
 function Bomb() {
 	this.prototype = new Square();
-	this.active = true;
+	this.flag = false;
 	this.show = false;
-	this.touching = '*';
+	this.display = function() { return '*' };
 }
+
+Bomb.prototype.setFlag = function() {
+	if(!this.flag && !this.show) {
+		this.flag = true;
+		flags--;
+	}
+	else {
+		this.flag = false;
+		flags++;
+	}
+};
 
 function Square(position) {
 	this.position = position;
 	this.touching = 0;
 	this.show = false;
+	this.flag = false;
 }
+
+Square.prototype.setFlag = function() {
+	if(!this.flag && !this.show) {
+		this.flag = true;
+		flags--;
+	}
+	else {
+		this.flag = false;
+		flags++;
+	}
+};
 
 Square.prototype.findBombs = function(grid) {
 	var that = this;
@@ -111,3 +151,17 @@ Square.prototype.showSquare = function(grid) {
 		});
 	}
 };
+
+Square.prototype.display = function() {
+	if(this.touching == 0) {
+		return '';
+	}
+	else {
+		return this.touching;
+	}
+};
+
+Square.prototype.cssClass = function() {
+	return 'show-' + this.touching;
+}
+
