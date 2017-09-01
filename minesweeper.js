@@ -2,7 +2,6 @@ $(document).ready(function() {
 	var grid = makeGrid(9);
 	render(grid);
 
-
 $('#grid').on('mousedown', '.box', function(event) {
 	switch(event.which) {
 		case 1:
@@ -15,11 +14,11 @@ $('#grid').on('mousedown', '.box', function(event) {
 			render(grid);
 			break;
 		case 3:
-			event.preventDefault();
 			$(this).data('object').setFlag();
 			render(grid);
 		}
-	});
+	check_game();
+});
 
 });
 
@@ -28,7 +27,28 @@ var surrounding = [ [-1, 1], [0, 1],   [1, 1],  [-1, 0],
 
 var bombs = [];
 
-flags = 9;
+var flags = 0;
+
+function new_game() {
+	bombs = [];
+	flags = 0;
+	var grid = makeGrid(9);
+	render(grid);
+}
+
+function check_game() {
+	if(bombs.every(b => b.flag == true)) {
+		if(window.confirm('You won! Try again?') == true) {
+			new_game();
+		}
+	}
+
+	if(bombs.some(b => b.show == true)) {
+		if(window.confirm('You lost. Try again?') == true) {
+			new_game();
+		}
+	}
+}
 
 function makeGrid(size) {
 	var grid = new Array(size);
@@ -46,6 +66,7 @@ function makeGrid(size) {
 		var y = Math.floor(Math.random() * size);
 		grid[x][y] = new Bomb();
 		bombs.push(grid[x][y]);
+		flags++;
 	}
 
 	for(var i = 0; i < size; i++) {
@@ -75,6 +96,7 @@ function render(grid) {
 	}
 }
 
+
 function showBox($box) {
 	var object = $box.data('object');
 	
@@ -95,7 +117,7 @@ function Bomb() {
 }
 
 Bomb.prototype.setFlag = function() {
-	if(!this.flag && !this.show) {
+	if(!this.flag && !this.show && flags > 0) {
 		this.flag = true;
 		flags--;
 	}
@@ -113,7 +135,7 @@ function Square(position) {
 }
 
 Square.prototype.setFlag = function() {
-	if(!this.flag && !this.show) {
+	if(!this.flag && !this.show && flags > 0) {
 		this.flag = true;
 		flags--;
 	}
@@ -145,7 +167,7 @@ Square.prototype.showSquare = function(grid) {
 			var y = that.position[1] + coord[1];
 			if((x >= 0 && x < grid.length) && (y >= 0 && y < grid.length)) {
 				if(grid[x][y] instanceof Square && grid[x][y].show == false) {
-					return grid[x][y].showSquare(grid);
+					grid[x][y].showSquare(grid);
 				}
 			}
 		});
